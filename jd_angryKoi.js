@@ -2,6 +2,7 @@
 愤怒的锦鲤
 更新时间：2021-7-11
 备注：高速并发请求，专治偷助力。在kois环境变量中填入需要助力的pt_pin，有多个请用@符号连接
+TG学习交流群：https://t.me/cdles
 0 0 * * * https://raw.githubusercontent.com/cdle/jd_study/main/jd_angryKoi.js
 */
 const $ = Env("愤怒的锦鲤")
@@ -14,6 +15,7 @@ var packets = [];
 !(async () => {
     if(!kois){
         console.log("请在环境变量中填写需要助力的账号pt_pin")
+        return
     }
     requireConfig()
     len = cookiesArr.length
@@ -63,7 +65,12 @@ var packets = [];
         )
         await $.wait(50)        
     }
-})()
+})()  .catch((e) => {
+    $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
+  })
+  .finally(() => {
+    $.done();
+  })
 
 function requestApi(functionId, cookie, body = {}) {
     return new Promise(resolve => {
