@@ -54,7 +54,7 @@ var tools = [];
         }
         await $.wait(20)
     }
-    await $.wait(10000)
+    await $.wait(2000)
     
 })().catch((e) => {
     $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
@@ -509,7 +509,7 @@ function Env(t, e) {
         done(t = {}) {
             const e = (new Date).getTime(),
                 s = (e - this.startTime) / 1e3;
-            this.log("", `🔔${this.name}, 结束! 🕛 ${s-10} 秒`), this.log(), (this.isSurge() || this.isQuanX() || this.isLoon()) && $done(t)
+            this.log("", `🔔${this.name}, 结束! 🕛 ${s-2} 秒`), this.log(), (this.isSurge() || this.isQuanX() || this.isLoon()) && $done(t)
         }
     }(t, e)
 }
