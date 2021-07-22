@@ -68,6 +68,9 @@ var tools = [];
                var tool = tools.pop()
                var data = await requestApi('splitRedPacket', tool.cookie, {shareCode:help.shareCode,groupCode:help.redPacketId});
                if(data){
+                    if(tool.id == help.id){
+                         continue
+                    }
                     console.log(`${tool.id+1}->${help.id+1} ${data.text}`)
                     if(tool.helps.indexOf(help.id) != -1){
                          break
@@ -75,6 +78,9 @@ var tools = [];
                     if(data.text == "我的红包已拆完啦"){
                          tools.unshift(tool)
                          break
+                    }
+                    if(data.text.indexOf("帮拆出错")!=-1){
+                         continue
                     }
                     if(data.text.indexOf("帮拆次数已达上限")!=-1){
                          continue
