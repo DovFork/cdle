@@ -38,7 +38,7 @@ var mode = $.isNode() ? (process.env.angryBeanMode ? process.env.angryBeanMode :
                     monitor_source: "bean_m_bean_index"
                });
                if (data && data.data && data.data.shareCode) {
-                    console.log(`${i+1} 可以被助力`)
+                    console.log(`${Number(i)+1} 可以被助力`)
                     helps.push({
                          id: +i,
                          cookie: cookie,
@@ -48,7 +48,7 @@ var mode = $.isNode() ? (process.env.angryBeanMode ? process.env.angryBeanMode :
                          success: false,
                     })
                }else{
-                    console.log(`${i+1} 不可以被助力`)
+                    console.log(`${Number(i)+1} 不可以被助力`)
                }
           }
           tools.push({
@@ -90,9 +90,22 @@ async function open(help) {
                return
           }
      }
-     if(mode != "speed" && tool.helps.indexOf(help.id)!=-1){
-          finished.push(help.id)
-          return
+     var helpNum = 0
+     for (let helpId of tool.helps) {
+          if (helpId==help.id) {
+               helpNum++
+          }
+     }
+     if(mode != "speed"){
+          if(helpNum>0){
+               finished.push(help.id)
+               return
+          }
+     } else {
+          if(helpNum>2){
+               finished.push(help.id)
+               return
+          }
      }
      async function handle(data) {
           var helpToast = undefined
