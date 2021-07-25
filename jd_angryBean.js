@@ -169,7 +169,10 @@ async function open(help) {
      async function handle(data) {
           var helpToast = undefined
           if (data && data.data && data.data.helpToast) {
+               tool.helps.add(help.id)
                helpToast = data.data.helpToast
+          } else {
+               tools.unshift(tool)
           }
           if (helpToast) {
                console.log(`${tool.id+1}->${help.id+1} ${helpToast}`)
@@ -190,7 +193,6 @@ async function open(help) {
                     tools.unshift(tool)
                }
           }
-          tool.helps.add(help.id)
           if (!help.success) {
                await open(help)
           } else {
@@ -231,7 +233,8 @@ function requestApi(functionId, cookie, body = {}, time = 0) {
                timeout: 2500,
           }, (_, resp, data) => {
                if (data) {
-                    resolve(JSON.parse(data))
+                    data = JSON.parse(data)
+                    resolve(data)
                } else {
                     if (time == 5) {
                          resolve(0)
