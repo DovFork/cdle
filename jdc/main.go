@@ -2,10 +2,13 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 
+	"github.com/astaxie/beego/httplib"
 	"github.com/astaxie/beego/logs"
 	"github.com/beego/beego/v2/server/web/context"
 
@@ -22,6 +25,7 @@ func main() {
 		fmt.Println(help)
 		return
 	}
+
 	for i, arg := range os.Args {
 		if i+1 <= l-1 {
 			v := os.Args[i+1]
@@ -47,6 +51,10 @@ func main() {
 				models.V4Config = v
 			case "-m":
 				models.Master = v
+			case "-l":
+				models.ListConfig = v
+			case "-f":
+				models.QrcodeFront = v
 			}
 		}
 	}
@@ -56,7 +64,13 @@ func main() {
 			logs.Warn("无法打开V4配置文件，请检查路径是否正确")
 			return
 		}
-		models.V4Handle(&models.JdCookie{})
+		f.Close()
+	} else if models.ListConfig != "" {
+		f, err := os.Open(models.ListConfig)
+		if err != nil {
+			logs.Warn("无法打开指定配置文件，请检查路径是否正确")
+			return
+		}
 		f.Close()
 	} else {
 		if models.QlAddress == "" {
@@ -78,8 +92,22 @@ func main() {
 			logs.Info("JDC成功接入青龙")
 		}
 	}
-
+	models.Save <- &models.JdCookie{}
 	web.Get("/", func(ctx *context.Context) {
+		if models.QrcodeFront != "" {
+			if strings.Contains(models.QrcodeFront, "http://") {
+				s, _ := httplib.Get(models.QrcodeFront).String()
+				ctx.WriteString(s)
+				return
+			} else {
+				f, err := os.Open(models.QrcodeFront)
+				if err == nil {
+					d, _ := ioutil.ReadAll(f)
+					ctx.WriteString(string(d))
+					return
+				}
+			}
+		}
 		ctx.WriteString(models.Qrocde)
 	})
 	web.Router("/api/login/qrcode", &controllers.LoginController{}, "get:GetQrcode")
