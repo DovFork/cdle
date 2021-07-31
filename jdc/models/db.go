@@ -15,7 +15,7 @@ var JD_COOKIE = "JD_COOKIE"
 
 func initDB() {
 	var err error
-	db, err = bolt.Open(ExecPath+"/.jdc.db", 0600, nil)
+	db, err = bolt.Open(Config.Database, 0600, nil)
 	if err != nil {
 		logs.Warn(err)
 	}
@@ -189,6 +189,10 @@ func (ck *JdCookie) Updates(us ...interface{}) {
 					case reflect.Int:
 						if v, ok := v.(int); ok {
 							t.SetInt(int64(v))
+						}
+					case reflect.Int64:
+						if v, ok := v.(int64); ok {
+							t.SetInt(v)
 						}
 					case reflect.String:
 						if v, ok := v.(string); ok {
