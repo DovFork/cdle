@@ -57,57 +57,7 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 		}
 		return rsp
 	default:
-		{
-			s := regexp.MustCompile(`(查询|query)\s+(.*)`).FindStringSubmatch(msg)
-			fmt.Println(s)
-			if len(s) > 0 {
-				cks := GetJdCookies()
-				a := s[2]
-				fmt.Println(a)
-				if s := strings.Split(a, "-"); len(s) != 2 {
-					for i, ck := range cks {
-						if i+1 >= Int(s[0]) && i+1 <= Int(s[1]) {
-							switch tp {
-							case "tg":
-								tgBotNotify(ck.Query())
-							case "qq":
-								if id == ck.QQ {
-									SendQQ(int64(id), ck.Query())
-								} else {
-									SendQQ(Config.QQID, ck.Query())
-								}
-							case "qqg":
-								uid := msgs[3].(int)
-								if uid == ck.QQ || uid == int(Config.QQID) {
-									SendQQGroup(int64(id), ck.Query())
-								}
-							}
-						}
-					}
-				} else {
-					// for _, ck := range cks {
-					// 	if strings.Contains(ck.Note, a) || strings.Contains(ck.Nickname, a) || strings.Contains(ck.PtPin, a) {
-					// 		switch tp {
-					// 		case "tg":
-					// 			tgBotNotify(ck.Query())
-					// 		case "qq":
-					// 			if id == ck.QQ {
-					// 				SendQQ(int64(id), ck.Query())
-					// 			} else {
-					// 				SendQQ(Config.QQID, ck.Query())
-					// 			}
-					// 		case "qqg":
-					// 			uid := msgs[3].(int)
-					// 			if uid == ck.QQ || uid == int(Config.QQID) {
-					// 				SendQQGroup(int64(id), ck.Query())
-					// 			}
-					// 		}
-					// 	}
-					// }
-				}
-				return ""
-			}
-		}
+
 		{ //
 			ss := regexp.MustCompile(`pt_key=([^;=\s]+);pt_pin=([^;=\s]+)`).FindAllStringSubmatch(msg, -1)
 			if len(ss) > 0 {
@@ -134,6 +84,56 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 					Save <- &JdCookie{}
 				}()
 				return nil
+			}
+		}
+
+		{
+			s := regexp.MustCompile(`(查询|query)\s+(.*)`).FindStringSubmatch(msg)
+			if len(s) > 0 {
+				cks := GetJdCookies()
+				a := s[2]
+				if s := strings.Split(a, "-"); len(s) == 2 {
+					for i, ck := range cks {
+						if i+1 >= Int(s[0]) && i+1 <= Int(s[1]) {
+							switch tp {
+							case "tg":
+								tgBotNotify(ck.Query())
+							case "qq":
+								if id == ck.QQ {
+									SendQQ(int64(id), ck.Query())
+								} else {
+									SendQQ(Config.QQID, ck.Query())
+								}
+							case "qqg":
+								uid := msgs[3].(int)
+								if uid == ck.QQ || uid == int(Config.QQID) {
+									SendQQGroup(int64(id), ck.Query())
+								}
+							}
+						}
+					}
+				} else {
+					for i, ck := range cks {
+						if a == fmt.Sprint(i+1) || strings.Contains(ck.Note, a) || strings.Contains(ck.Nickname, a) || strings.Contains(ck.PtPin, a) {
+							switch tp {
+							case "tg":
+								tgBotNotify(ck.Query())
+							case "qq":
+								if id == ck.QQ {
+									SendQQ(int64(id), ck.Query())
+								} else {
+									SendQQ(Config.QQID, ck.Query())
+								}
+							case "qqg":
+								uid := msgs[3].(int)
+								if uid == ck.QQ || uid == int(Config.QQID) {
+									SendQQGroup(int64(id), ck.Query())
+								}
+							}
+						}
+					}
+				}
+				return ""
 			}
 		}
 
