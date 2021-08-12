@@ -10,11 +10,14 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 )
 
-var version = "2021081203"
+var version = "2021081206"
 var AppName = "xdd"
 var pname = regexp.MustCompile(`/([^/\s]+)`).FindStringSubmatch(os.Args[0])[1]
 
 func initVersion() {
+	if Config.Version != "" {
+		version = Config.Version
+	}
 	logs.Info("检查更新" + version)
 	value, err := httplib.Get(GhProxy + "https://raw.githubusercontent.com/cdle/jd_study/main/xdd/models/version.go").String()
 	if err != nil {
@@ -32,7 +35,7 @@ func initVersion() {
 				filename := ExecPath + "/." + pname
 				f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0777)
 				if err != nil {
-					logs.Warn("无法创建更新临时文件" + filename)
+					logs.Warn("无法创建更新临时文件：%v"+filename, err)
 					return
 				}
 				_, err = io.Copy(f, rsp.Body)
