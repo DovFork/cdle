@@ -108,6 +108,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 	id := msgs[2].(int)
 	switch msg {
 	case "status", "状态":
+		if !isAdmin(msgs...) {
+			return "你没有权限操作"
+		}
 		return Count()
 	case "qrcode", "扫码", "二维码":
 		url := ""
@@ -219,6 +222,9 @@ var handleMessage = func(msgs ...interface{}) interface{} {
 				v := s[2]
 				switch s[1] {
 				case "查询", "query":
+					if !isAdmin(msgs...) {
+						return "你没有权限操作"
+					}
 					cks := GetJdCookies()
 					a := s[2]
 					{
